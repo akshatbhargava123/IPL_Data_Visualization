@@ -8,6 +8,7 @@
 <script>
 // @ is an alias to /src
 import WelcomingHeader from "@/components/WelcomingHeader.vue";
+import Ball_by_Ball from "@/assets/Ball_by_Ball.csv";
 
 export default {
   name: "home",
@@ -53,6 +54,12 @@ export default {
         }
       }
     };
+  },
+  created() {
+    this.$worker.run(arg => {
+      return arg.split('\n')[0];
+    }, [Ball_by_Ball])
+      .then(result => console.log(result));
   }
 };
 </script>
