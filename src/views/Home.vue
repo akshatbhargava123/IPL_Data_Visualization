@@ -9,6 +9,9 @@
 // @ is an alias to /src
 import WelcomingHeader from "@/components/WelcomingHeader.vue";
 import Ball_by_Ball from "@/assets/Ball_by_Ball.csv";
+import Match from "@/assets/Match.csv";
+
+import workerActions from "../webworker.actions";
 
 export default {
   name: "home",
@@ -17,6 +20,8 @@ export default {
   },
   data() {
     return {
+      ballByBallData: null,
+      matchesData: null,
       series: [
         {
           name: "series1",
@@ -56,10 +61,13 @@ export default {
     };
   },
   created() {
-    this.$worker.run(arg => {
-      return arg.split('\n')[0];
-    }, [Ball_by_Ball])
-      .then(result => console.log(result));
+    const worker = this.$worker.create(workerActions);
+
+    worker.postMessage('convertToJSON', [Ball_by_Ball])
+      .then(result => this.ballByBallData = result);
+
+    worker.postMessage('convertToJSON', [Match])
+      .then(result => this.matchesData = result);
   }
 };
 </script>
