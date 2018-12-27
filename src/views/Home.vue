@@ -34,14 +34,13 @@ export default {
       .then(result => {
         // Setting Match data for first time
         store.setItem(STORE_KEYS.MATCH_DATA_JSON, result);
-        store.setItem(STORE_KEYS.MATCH_DATA_READY, true);
-
         this.matchesData = result;
 
         worker.postMessage('getDataBySeasons', [this.matchesData])
           .then(res => {
             this.dataBySeasons = res;
             this.dataBySeasonsLoading = false;
+            store.setItem(STORE_KEYS.MATCH_DATA_BY_SEASON, res);
           });
       });
   },
