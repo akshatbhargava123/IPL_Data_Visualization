@@ -1,8 +1,9 @@
 <template>
   <el-card shadow="always">
     <h1>Season {{ id }}</h1>
-    <p>Total Matches: <b>{{ season ? season.length : '' }}</b></p>
+    <p>Total Matches: <b>{{ season.length }}</b></p>
     <p>Total Teams Participated: <b>{{ dataByTeams.length }}</b></p>
+    <p>No. of Matches won per team:</p>
     <el-row justify="center">
       <el-col :span="16" :offset="4">
         <div class="chart">
@@ -33,7 +34,7 @@ export default {
   data() {
     return {
       id: null,
-      season: null,
+      season: [],
       dataByTeams: [],
       teamsByWinsData: {},
       teamsByWinsChart: {
@@ -55,36 +56,25 @@ export default {
 
     const worker = store.getItem(STORE_KEYS.WORKER);
 
-    Promise.all([
-      worker.postMessage("getDataByTeams", [this.season])
-      // worker.postMessage("convertToJSON", [Ball_by_Ball])
-    ]).then(results => {
-      const dataByTeams = results[0];
-      const ballByBallJSON = results[1];
-
-      const teamKeys = Object.keys(dataByTeams);
-
-      store.setItem(STORE_KEYS.BALL_BY_BALL_DATA_JSON, ballByBallJSON);
+    worker.postMessage("getDataByTeams", [this.season]).then(dataByTeams => {
 
       // set data by teams of this particular season
       store.setItem(STORE_KEYS.SEASON_DATA_BY_TEAM, dataByTeams, this.id);
 
+      // prepare data for num match wins
       const teamNames = [];
       const winningMatches = [];
-
+      const teamKeys = Object.keys(dataByTeams);
       teamKeys.forEach(key => {
         const matches = dataByTeams[key];
+        const matchesWinning = matches.filter(m => m.Match_Winner_Id == key);
 
         teamNames.push(`Team_Name_${key}`);
-
-        const matchesWinning = matches.filter(m => m.Match_Winner_Id == key);
         winningMatches.push(matchesWinning.length);
-
         this.dataByTeams.push(dataByTeams[key]);
       });
 
-      console.log(teamNames, winningMatches);
-
+      // update num of match wins chart
       this.teamsByWinsChart.data = {
         labels: teamNames,
         datasets: [
