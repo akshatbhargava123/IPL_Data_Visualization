@@ -2,17 +2,29 @@
   <div id="app">
     <el-container>
       <el-header>IPL Data Visualizations</el-header>
+      <WelcomingHeader />
       <el-main>
-        <router-view/>
+        <router-view />
       </el-main>
     </el-container>
   </div>
 </template>
 
+<script>
+import WelcomingHeader from "@/components/WelcomingHeader.vue";
+
+export default {
+  components: {
+    WelcomingHeader
+  }
+}
+</script>
+
+
 <style>
 .el-header {
-  background-color: #b3c0d1;
-  color: #333;
+  background-color: #5A5754;
+  color: white;
   text-align: center;
   line-height: 60px;
   font-weight: bolder;

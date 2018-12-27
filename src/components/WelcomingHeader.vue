@@ -5,7 +5,7 @@
       <img alt="IPL" style="width: 15%; margin-left: 30px" src="../assets/IPL.jpg" />
     </div>
     <hr />
-    <h1>Hi Vipul</h1>
+    <h1>Hi human</h1>
     <p>
       Checkout some stats of previous IPL matches.
     </p>
