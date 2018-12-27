@@ -2,33 +2,56 @@ export default [
   {
     message: 'convertToJSON',
     func: (csv) => {
-      const rows = csv.split('\n'),
+      /**
+       * Converts CSV into JSON
+       */
+      const rows = csv.split(/\n|\r\n/),
         headers = rows.splice(0, 1)[0].split(','),
         json = [];
 
-      rows.forEach(row => {
+      for (let i = 0; i < rows.length; i++) {
         const obj = {};
-        const cols = row.split(',');
+        const cols = rows[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+        if (!cols) continue;
+
         headers.forEach((header, j) => {
+          if (header[0] == '"' || header[header.length - 1] == `"`)
+            header = header.slice(1, header.length - 1);
           obj[header] = cols[j];
         });
         json.push(obj);
-      });
+      }
+
       return json;
     }
   },
   {
     /**
-     * Pass all match array and get data as each season as key with match data as value
+     * Pass matches data array and get data sorted by each season with additional data for season like start and end date
      */
     message: 'getDataBySeasons',
     func: (matchData) => {
-      const seasons = {};
+      const seasons = { };
       matchData.forEach(row => {
-        if (seasons[row.Season_Id]) {
-          seasons[row.Season_Id].push(row);
+        const currentMatchDate = new Date(row.Match_Date);
+        let currentSeason = seasons[row.Season_Id];
+        if (currentSeason) {
+          currentSeason.matches.push(row);
+          if (currentMatchDate < currentSeason.startDate) {
+            currentSeason.endDate = currentSeason.startDate;
+            currentSeason.startDate = currentMatchDate;
+          } else if (currentMatchDate > currentSeason.startDate) {
+            if (!currentSeason.endDate || currentMatchDate > currentSeason.endDate) {
+              currentSeason.endDate = currentMatchDate;
+            }
+          }
+          currentSeason.startDate
         } else {
-          seasons[row.Season_Id] = [row];
+          seasons[row.Season_Id] = {
+            matches: [row],
+            startDate: new Date(row.Match_Date),
+            endDate: null
+          };
         }
       });
       delete seasons['undefined'];
