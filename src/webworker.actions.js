@@ -55,7 +55,7 @@ export default [
   },
   {
     /**
-     * Pass a particular season data array and get data as each venue as key with match data as value
+     * Pass a particular season data array and get data as each venue as key with array of match data as value
      */
     message: 'getDataByVenues',
     func: (seasonData) => {
@@ -69,6 +69,22 @@ export default [
       });
       delete venues['undefined'];
       return venues;
+    }
+  },
+  {
+    /**
+     * Will take a matchId, Team_Name_Id and Ball_by_Ball data JSON and return average runrate of that team across match
+     */
+    message: 'calculateRunRateOfTeamAcrossSeason',
+    func: (matchId, teamNameId, ballByBallData) => {
+      let balls = 0, runs = 0;
+      ballByBallData.forEach(d => {
+        if (d.Match_Id == matchId && d.Team_Batting_Id == teamNameId) {
+          balls++;
+          runs += Number(d.Batsman_Scored) + Number(d.Extra_Runs);
+        }
+      });
+      return runs / balls;
     }
   },
   {
