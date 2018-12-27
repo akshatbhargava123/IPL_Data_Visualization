@@ -1,5 +1,4 @@
 import Vue from 'vue';
-import VueApexCharts from "vue-apexcharts";
 import VueWorker from "vue-worker";
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
@@ -11,10 +10,7 @@ import webworkerActions from './webworker.actions';
 import store, { STORE_KEYS } from './sharedservice';
 
 Vue.use(ElementUI);
-Vue.use(VueApexCharts);
 Vue.use(VueWorker);
-
-Vue.component("apexchart", VueApexCharts);
 
 Vue.config.productionTip = false;
 
