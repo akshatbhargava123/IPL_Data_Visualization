@@ -3,6 +3,8 @@ import VueWorker from "vue-worker";
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 
+import { ToFromDateFilter } from './filters/ToFromDate';
+
 import App from './App.vue';
 import router from './router';
 import './registerServiceWorker';
@@ -11,6 +13,8 @@ import store, { STORE_KEYS } from './sharedservice';
 
 Vue.use(ElementUI);
 Vue.use(VueWorker);
+
+Vue.filter('ToFromDate', ToFromDateFilter);
 
 Vue.config.productionTip = false;
 
