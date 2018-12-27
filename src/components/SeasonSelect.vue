@@ -4,7 +4,7 @@
       <div @click="emitClick(season.matches[0].Season_Id)">
         <smart-card>
           <span slot="heading">Season {{ season.matches[0].Season_Id }}</span>
-          <span slot="content">Total seasons: {{ season.matches.length }}</span>
+          <span slot="content">Total matches: {{ season.matches.length }}</span>
           <span slot="content-2">{{ `${season.startDate}|${season.endDate}` | ToFromDate }}</span>
         </smart-card>
       </div>

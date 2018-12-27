@@ -96,9 +96,9 @@ export default [
   },
   {
     /**
-     * Will take a matchId, Team_Name_Id and Ball_by_Ball data JSON and return average runrate of that team across match
+     * Will take a matchId, Team_Name_Id and Ball_by_Ball data JSON and return net runrate of that team across match
      */
-    message: 'calculateRunRateOfTeamAcrossSeason',
+    message: 'calculateNetRunRateOfTeamInMatch',
     func: (matchId, teamNameId, ballByBallData) => {
       let balls = 0, runs = 0;
       ballByBallData.forEach(d => {

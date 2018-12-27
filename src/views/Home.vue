@@ -20,7 +20,6 @@ export default {
   },
   data() {
     return {
-      ballByBallData: null,
       matchesData: null,
 
       dataBySeasons: null,
@@ -32,6 +31,7 @@ export default {
 
     worker.postMessage('convertToJSON', [Match])
       .then(result => {
+
         // Setting Match data for first time
         store.setItem(STORE_KEYS.MATCH_DATA_JSON, result);
         this.matchesData = result;
@@ -40,7 +40,7 @@ export default {
           .then(res => {
             this.dataBySeasons = res;
             this.dataBySeasonsLoading = false;
-            store.setItem(STORE_KEYS.MATCH_DATA_BY_SEASON, res);
+            // store.setItem(STORE_KEYS.MATCH_DATA_BY_SEASON, res.map(d => d.matches));
           });
       });
   },
