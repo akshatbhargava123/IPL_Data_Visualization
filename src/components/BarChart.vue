@@ -14,8 +14,6 @@ export default {
     };
   },
   mounted() {
-    console.log(this.dataProp, this.options, this.type);
-    console.log('mounted')
     this.chart = new Chart(this.$refs.chartCanvas, {
       data: this.dataProp,
       options: {
@@ -44,7 +42,6 @@ export default {
   },
   watch: {
     dataProp: function() {
-      console.log('updating charts...');
       this.chart.data = this.dataProp;
       this.chart.update();
     }

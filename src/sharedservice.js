@@ -1,8 +1,8 @@
 const store = {};
 
 /**
- * Didn't wish to use indexed DB or vuex and let things be simpler
- * so using this store as my global shared store of the app
+ * Made this to have a global instance of worker,
+ * this was intially developed to contain whole app state but idea changed.
  */
 
 export default {
@@ -17,12 +17,4 @@ export default {
   getItem(key) {
     return store[key];
   }
-};
-
-export const STORE_KEYS = {
-  WORKER: 'worker',
-  MATCH_DATA_JSON: 'match_data_json',
-  BALL_BY_BALL_DATA_JSON: 'ball_by_ball_data_json',
-  MATCH_DATA_BY_SEASON: 'match_data_by_seasons',
-  SEASON_DATA_BY_TEAM: 'season_data_by_team'
 };

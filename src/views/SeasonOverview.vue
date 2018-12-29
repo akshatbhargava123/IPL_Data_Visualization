@@ -44,14 +44,12 @@
 <script>
 import localforage from "localforage";
 
-import Ball_by_Ball from "@/assets/Ball_by_Ball.csv";
-
 import BarChart from "@/components/BarChart";
 import VenueSelect from "@/components/VenueSelect";
 import MatchesDetailTable from "@/components/MatchesDetailTable";
 import Loading from "@/components/Loading";
 
-import store, { WORKER_KEY, STORE_KEYS } from "../sharedservice";
+import store from "../sharedservice";
 import { getColor, getColors, getLightColors } from "../utils";
 
 export default {
@@ -100,14 +98,11 @@ export default {
 
     document.getElementById("focusedElem").scrollIntoView();
 
-    const worker = store.getItem(STORE_KEYS.WORKER);
+    const worker = store.getItem('worker');
 
     const dataByTeams = await worker.postMessage("getDataByTeams", [
       this.season.matches
     ]);
-
-    // set data by teams of this particular season
-    store.setItem(STORE_KEYS.SEASON_DATA_BY_TEAM, dataByTeams, this.id);
 
     const ballByBallJSON = await localforage.getItem("BallbyBall_JSON");
     const matchesDetail = await worker.postMessage("getMatchDetails", [

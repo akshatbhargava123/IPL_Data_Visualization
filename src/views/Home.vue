@@ -12,7 +12,7 @@ import Loading from "@/components/Loading.vue";
 import Match from "@/assets/Match.csv";
 import Ball_by_Ball from "@/assets/Ball_by_Ball.csv";
 
-import store, { STORE_KEYS } from "../sharedservice";
+import store from "../sharedservice";
 
 export default {
   name: "home",
@@ -29,7 +29,7 @@ export default {
     };
   },
   created() {
-    this.worker = store.getItem(STORE_KEYS.WORKER);
+    this.worker = store.getItem('worker');
     localforage.setDriver(localforage.INDEXEDDB);
 
     localforage.getItem("Matches_JSON").then(Matches_JSON => {
