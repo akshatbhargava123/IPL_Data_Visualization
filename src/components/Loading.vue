@@ -1,5 +1,9 @@
 <template>
-  <span v-loading="true"></span>
+  <div>
+    <h3>Crunching Data...</h3>
+    <br />
+    <span v-loading="true"></span>
+  </div>
 </template>
 
 <script>
@@ -10,6 +14,7 @@ export default {
 
 <style scoped>
   span {
-    margin: 4px;
+    padding: 0px;
+    left: -1.4%
   }
 </style>

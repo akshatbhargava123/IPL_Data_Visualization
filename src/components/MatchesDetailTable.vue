@@ -1,12 +1,12 @@
 <template>
   <el-row>
     <el-col :span="18" :offset="3">
-    <el-table :data="matches" border height="650" align="center">
-      <el-table-column label="Id" width="120">
+    <el-table :data="matches" border height="650" align="center" row-class-name="custom-row">
+      <!-- <el-table-column label="Id" width="120">
         <template slot-scope="scope">
           {{ scope.row.Match_Id }}
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="Date" width="120">
         <template slot-scope="scope">
           {{ scope.row.Match_Date | PlainDate }}
@@ -19,10 +19,10 @@
             VS
             <span :class="scope.row.Opponent_Team_Id == scope.row.Match_Winner_Id ? 'winner' : 'loser'">{{ `Team_Name_${scope.row.Opponent_Team_Id}` }}</span>
           </h3>
-          <p>{{ scope.row.Win_Type != 'Tie' ? `Team_Name_${scope.row.Match_Winner_Id} won by ${scope.row.Won_By} ${scope.row.Win_Type}` : scope.row.Win_Type == 'Tie' ? 'No Winner - Tie Match' : 'No Result' }}</p>
+          <p>{{ scope.row.Win_Type != 'Tie' ? `Team_Name_${scope.row.Match_Winner_Id} won ${scope.row.Won_By} ${scope.row.Win_Type}` : scope.row.Win_Type == 'Tie' ? 'No Winner - Tie Match' : 'No Result' }}</p>
         </template>
       </el-table-column>
-      <el-table-column label="NRR">
+      <el-table-column label="Net Run Rate (1 -> 2)">
         <template slot-scope="scope">
           <h3>
             {{ matchesDetail[scope.row.Match_Id] ? matchesDetail[scope.row.Match_Id].Net_Run_Rate ? matchesDetail[scope.row.Match_Id].Net_Run_Rate : 'Calc Failed due to insufficient data!' : 'Calc Failed due to insufficient data!' }}
@@ -35,20 +35,18 @@
           <h3>
             {{
             (matchesDetail[scope.row.Match_Id][1].teamId == scope.row.Team_Name_Id ?
-              `${matchesDetail[scope.row.Match_Id][1].runs} / ${matchesDetail[scope.row.Match_Id][1].totalOuts}`:
-              `${matchesDetail[scope.row.Match_Id][2].runs} / ${matchesDetail[scope.row.Match_Id][2].totalOuts}`)
+              `${matchesDetail[scope.row.Match_Id][1].runs} / ${matchesDetail[scope.row.Match_Id][1].totalOuts} (${matchesDetail[scope.row.Match_Id][1].overs.length} o)`:
+              `${matchesDetail[scope.row.Match_Id][2].runs} / ${matchesDetail[scope.row.Match_Id][2].totalOuts} (${matchesDetail[scope.row.Match_Id][2].overs.length} o)`)
             }}
           </h3>
           <p>{{ `Team_Name_${scope.row.Opponent_Team_Id}` }}</p>
           <h3>
             {{
             (matchesDetail[scope.row.Match_Id][1].teamId == scope.row.Opponent_Team_Id ?
-              `${matchesDetail[scope.row.Match_Id][1].runs} / ${matchesDetail[scope.row.Match_Id][1].totalOuts}`:
-              `${matchesDetail[scope.row.Match_Id][2].runs} / ${matchesDetail[scope.row.Match_Id][2].totalOuts}`)
+              `${matchesDetail[scope.row.Match_Id][1].runs} / ${matchesDetail[scope.row.Match_Id][1].totalOuts} (${matchesDetail[scope.row.Match_Id][1].overs.length} o)`:
+              `${matchesDetail[scope.row.Match_Id][2].runs} / ${matchesDetail[scope.row.Match_Id][2].totalOuts} (${matchesDetail[scope.row.Match_Id][2].overs.length} o)`)
             }}
           </h3>
-          <!-- <h5>{{ `Team_Name_${scope.row.Match_Winner_Id}` }}</h5>
-          <p>{{ matchesDetail[scope.row.Match_Id][scope.row.Team_Name_Id].runs }} / {{ matchesDetail[scope.row.Match_Id][scope.row.Opponent_Team_Id].caught }}</p> -->
         </template>
       </el-table-column>
     </el-table>
@@ -80,6 +78,26 @@ export default {
   }
 };
 </script>
+
+<style>
+.custom-row {
+  cursor: pointer;
+}
+.custom-row:hover {
+  -webkit-box-shadow: 5px 5px 84px -23px rgba(0,0,0,0.69);
+  -moz-box-shadow: 5px 5px 84px -23px rgba(0,0,0,0.69);
+  box-shadow: 5px 5px 84px -23px rgba(0,0,0,0.69);
+}
+tbody::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+}
+tbody::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0,0,0,.5);
+    box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
+</style>
 
 <style scoped>
 .col {
