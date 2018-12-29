@@ -3,46 +3,61 @@
     <h1>Season {{ id }}</h1>
     <p>{{ `${season.startDate}|${season.endDate}` | ToFromDate }}</p>
     <p>Total Matches: <b>{{ season.matches ? season.matches.length : '' }}</b></p>
-    <p>Total Teams Participated: <b>{{ dataByTeams.length }}</b></p>
-    <p>No. of Matches won per team:</p>
-    <el-row justify="center">
-      <el-col :span="16" :offset="4">
-        <div class="chart">
-          <bar-chart
-            type="horizontalBar"
-            :dataProp="teamsByWinsChart.data"
-            :options="teamsByWinsChart.options"
-            xStepSize="1"
-          ></bar-chart>
-        </div>
-      </el-col>
-      <el-col :span="4"></el-col>
-    </el-row>
+    <Loading v-if="loading" />
+    <div v-else>
+      <p>Total Teams Participated: <b>{{ dataByTeams.length }}</b></p>
+      <p>No. of Matches won per team:</p>
+      <el-row justify="center">
+        <el-col :span="16" :offset="4">
+          <div class="chart">
+            <bar-chart
+              type="horizontalBar"
+              :dataProp="teamsByWinsChart.data"
+              :options="teamsByWinsChart.options"
+              xStepSize="1"
+            ></bar-chart>
+          </div>
+          <p>Season's Net Run Rate:</p>
+          <div class="chart">
+            <bar-chart
+              type="bar"
+              :dataProp="teamsNRRChart.data"
+              :options="teamsNRRChart.options"
+              xStepSize="1"
+            ></bar-chart>
+          </div>
+        </el-col>
+        <el-col :span="4"></el-col>
+      </el-row>
 
-    <hr />
-    <h3>Venues / Stadiums in the Season</h3>
-    <venue-select :dataByVenues="dataByVenues"></venue-select>
+      <hr />
+      <h3>Venues / Stadiums in the Season</h3>
+      <venue-select :dataByVenues="dataByVenues"></venue-select>
 
-    <hr />
-    <h3>Match Results of the Season</h3>
-    <matches-detail-table :matches="season.matches"></matches-detail-table>
-    
+      <hr />
+      <h3>Match Results of the Season</h3>
+      <matches-detail-table :matches="season.matches" :matchesDetail="matchesDetail"></matches-detail-table>
+    </div>
   </el-card>
 </template>
 
 <script>
+import localforage from "localforage";
+
 import Ball_by_Ball from "@/assets/Ball_by_Ball.csv";
 
 import BarChart from "@/components/BarChart";
 import VenueSelect from "@/components/VenueSelect";
 import MatchesDetailTable from "@/components/MatchesDetailTable";
+import Loading from "@/components/Loading";
 
 import store, { WORKER_KEY, STORE_KEYS } from "../sharedservice";
-import { getColors, getLightColors } from "../utils";
+import { getColor, getColors, getLightColors } from "../utils";
 
 export default {
   name: "SeasonOverview",
   components: {
+    Loading,
     BarChart,
     VenueSelect,
     MatchesDetailTable
@@ -53,7 +68,6 @@ export default {
       season: [],
       dataByTeams: [],
       dataByVenues: [],
-      teamsByWinsData: {},
       teamsByWinsChart: {
         options: {
           legend: {
@@ -64,10 +78,23 @@ export default {
           labels: [],
           datasets: []
         }
-      }
+      },
+      teamsNRRChart: {
+        options: {
+          legend: {
+            display: false
+          }
+        },
+        data: {
+          labels: [],
+          datasets: []
+        }
+      },
+      matchesDetail: {},
+      loading: true
     };
   },
-  mounted() {
+  async mounted() {
     this.id = this.$route.params.id;
     this.season = this.$route.params.season;
 
@@ -75,84 +102,104 @@ export default {
 
     const worker = store.getItem(STORE_KEYS.WORKER);
 
-    worker
-      .postMessage("getDataByTeams", [this.season.matches])
-      .then(dataByTeams => {
-        // set data by teams of this particular season
-        store.setItem(STORE_KEYS.SEASON_DATA_BY_TEAM, dataByTeams, this.id);
+    const dataByTeams = await worker.postMessage("getDataByTeams", [
+      this.season.matches
+    ]);
 
-        // prepare data for num match wins
-        const teamNames = [];
-        const winningMatches = [];
-        const teamKeys = Object.keys(dataByTeams);
-        teamKeys.forEach(key => {
-          const matches = dataByTeams[key];
-          const matchesWinning = matches.filter(m => m.Match_Winner_Id == key);
+    // set data by teams of this particular season
+    store.setItem(STORE_KEYS.SEASON_DATA_BY_TEAM, dataByTeams, this.id);
 
-          teamNames.push(`Team_Name_${key}`);
-          winningMatches.push(matchesWinning.length);
-          this.dataByTeams.push(dataByTeams[key]);
-        });
+    const ballByBallJSON = await localforage.getItem("BallbyBall_JSON");
+    const matchesDetail = await worker.postMessage("getMatchDetails", [
+      ballByBallJSON
+    ]);
+    this.matchesDetail = matchesDetail;
 
-        // update num of match wins chart
-        this.teamsByWinsChart.data = {
-          labels: teamNames,
-          datasets: [
-            {
-              data: winningMatches,
-              label: "No of wins",
-              borderWidth: 1,
-              backgroundColor: getColors(winningMatches.length),
-              borderColor: getLightColors(winningMatches.length)
-            }
-          ]
-        };
+    // prepare data for num match wins
+    const teamNames = [];
+    const winningMatches = [];
+    const losingMatches = [];
+    const NRRs = [];
+    const teamKeys = Object.keys(dataByTeams);
+    teamKeys.forEach(key => {
+      const matches = dataByTeams[key];
+      let wonMatches = 0;
+      let lostMatches = 0;
+      let NRRInSeason = 0;
+      let consideredMatches = 0;
+      for (let i = 0; i < matches.length; i++) {
+        if (matches[i].Match_Winner_Id == key) {
+          wonMatches++;
+        } else {
+          lostMatches++;
+        }
 
-        // console.log(dataByTeams);
-        // console.log(ballByBallJSON);
+        /**
+         * Due to insufficient ball by ball data of few matches (501230, 501250, etc),
+         * we are skipping the matches, we couldn't calculate NRR of.
+         * These matches doesn't contain information of full second inning (all players are not dismissed)
+         */
+        const matchDetail = this.matchesDetail[matches[i].Match_Id];
 
-        worker
-          .postMessage("convertToJSON", [Ball_by_Ball])
-          .then(ballByBallJSON => {
-            this.season.matches.forEach(match => {
-              worker
-                .postMessage("calculateNetRunRateOfTeamInMatch", [
-                  match.Match_Id,
-                  match.Team_Name_Id,
-                  ballByBallJSON
-                ])
-                .then(runrate => {
-                  console.log(match.Match_Id, match.Team_Name_Id, runrate);
-                });
-            });
-          });
+        if (matchDetail.Net_Run_Rate) {
+          NRRInSeason += Number(matchDetail.Net_Run_Rate);
+          consideredMatches++;
+        }
+      }
 
-        //   teamKeys.forEach(key => {
-        //   const matchesPlayed = dataByTeams[1].map(d => d.Match_Id);
-        //   console.log(matchesPlayed)
+      NRRInSeason /= consideredMatches;
 
-        //   matchesPlayed.forEach(matchId => {
-        //     worker.postMessage(
-        //       'calculateNetRunRateOfTeamInMatch',
-        //       [matchId, 1, ballByBallJSON]
-        //     ).then(runrate => {
-        //       console.log(`teamId: ${1} - matchId: ${matchId} - runRate: ${runrate}`);
-        //     });
+      teamNames.push(`Team_Name_${key}`);
+      winningMatches.push(wonMatches);
+      losingMatches.push(lostMatches);
+      NRRs.push(NRRInSeason.toFixed(2));
+      this.dataByTeams.push(dataByTeams[key]);
+    });
 
-        //   // })
-        // });
+    // update num of match wins chart
+    this.teamsByWinsChart.data = {
+      labels: teamNames,
+      datasets: [
+        {
+          data: winningMatches,
+          label: "No of wins",
+          borderWidth: 1,
+          backgroundColor: Array(winningMatches.length).fill(getColor(2).color),
+          borderColor: Array(winningMatches.length).fill(getColor(2).lightColor)
+        },
+        {
+          data: losingMatches,
+          label: "No of loses",
+          borderWidth: 1,
+          backgroundColor: Array(losingMatches.length).fill(getColor(1).color),
+          borderColor: Array(losingMatches.length).fill(getColor(1).lightColor)
+        }
+      ]
+    };
 
-        worker
-          .postMessage("getDataByVenues", [this.season.matches])
-          .then(dataByVenues => {
-            console.log(dataByVenues);
-            const venueKeys = Object.keys(dataByVenues);
+    this.teamsNRRChart.data = {
+      labels: teamNames,
+      datasets: [
+        {
+          data: NRRs,
+          label: "Net Run Rate of team",
+          borderWidth: 1,
+          backgroundColor: Array(NRRs.length).fill(getColor(6).color),
+          borderColor: Array(NRRs.length).fill(getColor(6).lightColor)
+        }
+      ]
+    };
 
-            venueKeys.forEach(key => {
-              this.dataByVenues.push(dataByVenues[key]);
-            });
-          });
-      });
+    // TO GET DATA BY VENUES
+    const dataByVenues = await worker.postMessage("getDataByVenues", [
+      this.season.matches
+    ]);
+    const venueKeys = Object.keys(dataByVenues);
+    venueKeys.forEach(key => {
+      this.dataByVenues.push(dataByVenues[key]);
+    });
+
+    this.loading = false;
   }
 };
 </script>
@@ -162,4 +209,3 @@ export default {
   min-height: 1200px;
 }
 </style>
-
