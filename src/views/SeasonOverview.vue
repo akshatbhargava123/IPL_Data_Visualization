@@ -36,7 +36,11 @@
 
       <hr />
       <h3>Match Results of the Season</h3>
-      <matches-detail-table :matches="season.matches" :matchesDetail="matchesDetail"></matches-detail-table>
+      <matches-detail-table
+        :matches="season.matches"
+        :matchesDetail="matchesDetail"
+        @matchSelect="navigateToMatchOverview"
+      ></matches-detail-table>
     </div>
   </el-card>
 </template>
@@ -195,6 +199,17 @@ export default {
     });
 
     this.loading = false;
+  },
+  methods: {
+    navigateToMatchOverview({ match }) {
+      this.$router.push({
+        name: "match-overview",
+        params: {
+          match,
+          matchDetails: this.matchesDetail[match.Match_Id]
+        }
+      });
+    }
   }
 };
 </script>

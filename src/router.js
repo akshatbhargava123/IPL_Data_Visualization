@@ -3,6 +3,7 @@ import Router from 'vue-router'
 
 import Home from './views/Home.vue'
 import SeasonOverview from './views/SeasonOverview.vue'
+import MatchOverview from './views/MatchOverview.vue'
 
 Vue.use(Router)
 
@@ -17,6 +18,11 @@ export default new Router({
       path: '/season-overview',
       name: 'season-overview',
       component: SeasonOverview
+    },
+    {
+      path: '/match-overview',
+      name: 'match-overview',
+      component: MatchOverview
     }
     // {
     //   path: '/about',

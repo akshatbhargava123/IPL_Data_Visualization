@@ -1,7 +1,14 @@
 <template>
   <el-row>
     <el-col :span="18" :offset="3">
-    <el-table :data="matches" border height="650" align="center" row-class-name="custom-row">
+    <el-table
+      :data="matches"
+      border
+      height="650"
+      align="center"
+      row-class-name="custom-row"
+      @row-click="onMatchSelect"
+    >
       <!-- <el-table-column label="Id" width="120">
         <template slot-scope="scope">
           {{ scope.row.Match_Id }}
@@ -70,11 +77,10 @@ export default {
     }
     // console.log(this.matches)
   },
-  updated() {
-    // console.log(this.matches)
-  },
-  mounted() {
-    // console.log(this.matches)
+  methods: {
+    onMatchSelect(match) {
+      this.$emit("matchSelect", { match });
+    }
   }
 };
 </script>
