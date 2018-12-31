@@ -1,7 +1,7 @@
 <template>
   <el-row :gutter="10">
     <el-col :span="12" v-for="match of dataByVenues" :key="match[0].Venue_Name">
-      <div @click="emitClick(match[0].Newlands)">
+      <div @click="emitClick(match)">
         <smart-card>
           <span slot="heading">{{ match[0].Venue_Name }}</span>
           <span slot="content">Total matches: {{ match.length }}</span>
@@ -19,9 +19,6 @@ export default {
   name: "VenueSelect",
   props: ["dataByVenues"],
   components: { SmartCard },
-  created() {
-    console.log(this.dataByVenues)
-  },
   methods: {
     emitClick(venue) {
       this.$emit("venueClick", venue);

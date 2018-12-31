@@ -1,7 +1,7 @@
 <template>
   <el-card shadow="always" id="focusedElement">
     <h1>Match {{ match.Match_Id }}</h1>
-    <p>This was {{ matchNum | NumberSuffix }} match of this season.</p>
+    <p v-if="matchNum">This was {{ matchNum | NumberSuffix }} match of this season.</p>
     <p>{{ match.Match_Date | PlainDate }}</p>
     <p>Net Run Rate: ±{{ matchDetails.Net_Run_Rate }}</p>
     <Loading v-if="loading" />

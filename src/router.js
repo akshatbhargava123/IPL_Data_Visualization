@@ -23,6 +23,11 @@ export default new Router({
       path: '/match-overview',
       name: 'match-overview',
       component: () => import('./views/MatchOverview.vue')
+    },
+    {
+      path: '/venue-overview',
+      name: 'venue-overview',
+      component: () => import('./views/VenueOverview.vue')
     }
     // {
     //   path: '/about',

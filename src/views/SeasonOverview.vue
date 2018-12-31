@@ -32,7 +32,7 @@
 
       <hr />
       <h3>Venues / Stadiums in the Season</h3>
-      <venue-select :dataByVenues="dataByVenues"></venue-select>
+      <venue-select :dataByVenues="dataByVenues" @venueClick="onVenueSelect"></venue-select>
 
       <hr />
       <h3>Match Results of the Season</h3>
@@ -215,6 +215,22 @@ export default {
           match,
           matchDetails: this.matchesDetail[match.Match_Id],
           matchNum
+        }
+      });
+    },
+    async onVenueSelect(venueMatches) {
+      const matchesDetail = venueMatches.map(m => this.matchesDetail[m.Match_Id]);
+
+      await localforage.setItem('venueMatches', venueMatches);
+      await localforage.setItem('venueMatchesDetail', matchesDetail);
+      await localforage.setItem('fullMatchesDetail', this.matchesDetail);
+
+      this.$router.push({
+        name: "venue-overview",
+        params: {
+          venueMatches,
+          matchesDetail,
+          fullMatchesDetail: this.matchesDetail
         }
       });
     }
