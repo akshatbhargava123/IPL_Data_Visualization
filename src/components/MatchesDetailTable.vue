@@ -26,7 +26,7 @@
             VS
             <span :class="scope.row.Opponent_Team_Id == scope.row.Match_Winner_Id ? 'winner' : 'loser'">{{ `Team_Name_${scope.row.Opponent_Team_Id}` }}</span>
           </h3>
-          <p>{{ scope.row.Win_Type != 'Tie' ? `Team_Name_${scope.row.Match_Winner_Id} won ${scope.row.Won_By} ${scope.row.Win_Type}` : scope.row.Win_Type == 'Tie' ? 'No Winner - Tie Match' : 'No Result' }}</p>
+          <p>{{ scope.row.Win_Type != 'Tie' ? `Team_Name_${scope.row.Match_Winner_Id} won ${scope.row.Won_By} ${scope.row.Win_Type.slice(2, scope.row.Win_Type.length)}` : scope.row.Win_Type == 'Tie' ? 'No Winner - Tie Match' : 'No Result' }}</p>
         </template>
       </el-table-column>
       <el-table-column label="Net Run Rate (1 -> 2)">
