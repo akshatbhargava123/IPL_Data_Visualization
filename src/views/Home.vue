@@ -9,10 +9,9 @@ import localforage from "localforage";
 import SeasonSelect from "@/components/SeasonSelect.vue";
 import Loading from "@/components/Loading.vue";
 
-import Match from "@/assets/Match.csv";
-import Ball_by_Ball from "@/assets/Ball_by_Ball.csv";
-
 import store from "../sharedservice";
+
+let Match, Ball_by_Ball;
 
 export default {
   name: "home",
@@ -28,19 +27,30 @@ export default {
       dataLoading: true
     };
   },
-  created() {
+  async created() {
     this.worker = store.getItem('worker');
     localforage.setDriver(localforage.INDEXEDDB);
 
-    localforage.getItem("Matches_JSON").then(Matches_JSON => {
-      if (Matches_JSON) {
-        Promise.resolve(Matches_JSON).then(this.MatchJSONReady);
-      } else {
-        this.worker
-          .postMessage("convertToJSON", [Match])
-          .then(this.MatchJSONReady);
-      }
-    });
+    // Eagerly loading CSV files for better experience later
+
+    await fetch('https://firebasestorage.googleapis.com/v0/b/test-1522465624044.appspot.com/o/Ball_by_Ball.csv?alt=media&token=cc1bff3d-e7d5-40a9-b209-48de62180b0e')
+      .then(res => res.text())
+      .then(res => Ball_by_Ball = res)
+      .catch(err => alert('Some error occured, please reload the page.'));
+
+    await fetch('https://firebasestorage.googleapis.com/v0/b/test-1522465624044.appspot.com/o/Match.csv?alt=media&token=200ae91e-9634-4b8c-8277-a581a699e15b')
+      .then(res => res.text())
+      .then(res => Match = res)
+      .catch(err => alert('Some error occured, please reload the page.'));
+
+    const Matches_JSON = await localforage.getItem("Matches_JSON");
+    if (Matches_JSON) {
+      Promise.resolve(Matches_JSON).then(this.MatchJSONReady);
+    } else {
+      this.worker
+        .postMessage("convertToJSON", [Match])
+        .then(this.MatchJSONReady);
+    }
   },
   methods: {
     async seasonSelected(seasonKey) {
