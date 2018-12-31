@@ -59,6 +59,7 @@
         </el-col>
       </el-row>
 
+      <br />
       <p>Runs per over of both teams:</p>
 
       <div class="chart">
@@ -70,6 +71,7 @@
         ></bar-chart>
       </div>
 
+      <hr />
       <p>Run Rate per over of both teams:</p>
 
       <div class="chart">
