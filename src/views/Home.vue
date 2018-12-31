@@ -33,15 +33,25 @@ export default {
 
     // Eagerly loading CSV files for better experience later
 
-    await fetch('https://firebasestorage.googleapis.com/v0/b/test-1522465624044.appspot.com/o/Ball_by_Ball.csv?alt=media&token=cc1bff3d-e7d5-40a9-b209-48de62180b0e')
-      .then(res => res.text())
-      .then(res => Ball_by_Ball = res)
-      .catch(err => alert('Some error occured, please reload the page.'));
+    Match = await localforage.getItem('Match_Data')
+    Ball_by_Ball = await localforage.getItem('Ball_by_Ball_Data')
 
-    await fetch('https://firebasestorage.googleapis.com/v0/b/test-1522465624044.appspot.com/o/Match.csv?alt=media&token=200ae91e-9634-4b8c-8277-a581a699e15b')
-      .then(res => res.text())
-      .then(res => Match = res)
-      .catch(err => alert('Some error occured, please reload the page.'));
+    if (!Match) {
+      await fetch('https://firebasestorage.googleapis.com/v0/b/test-1522465624044.appspot.com/o/Match.csv?alt=media&token=200ae91e-9634-4b8c-8277-a581a699e15b')
+        .then(res => res.text())
+        .then(res => Match = res)
+        .catch(err => alert('Some error occured, please reload the page.'));
+    }
+    
+    if (!Ball_by_Ball) {
+      await fetch('https://firebasestorage.googleapis.com/v0/b/test-1522465624044.appspot.com/o/Ball_by_Ball.csv?alt=media&token=cc1bff3d-e7d5-40a9-b209-48de62180b0e')
+        .then(res => res.text())
+        .then(res => Ball_by_Ball = res)
+        .catch(err => alert('Some error occured, please reload the page.'));
+    }
+
+    localforage.setItem('Match_Data', Match)
+    localforage.setItem('Ball_by_Ball_Data', Ball_by_Ball)
 
     const Matches_JSON = await localforage.getItem("Matches_JSON");
     if (Matches_JSON) {
