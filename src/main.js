@@ -5,6 +5,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 
 import { ToFromDateFilter } from './filters/ToFromDate';
 import { PlainDateFilter } from './filters/PlainDate';
+import { NumberSuffix } from './filters/NumberSuffix';
 
 import App from './App.vue';
 import router from './router';
@@ -17,6 +18,7 @@ Vue.use(VueWorker);
 
 Vue.filter('ToFromDate', ToFromDateFilter);
 Vue.filter('PlainDate', PlainDateFilter);
+Vue.filter('NumberSuffix', NumberSuffix);
 
 Vue.config.productionTip = false;
 
