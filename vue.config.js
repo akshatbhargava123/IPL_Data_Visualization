@@ -1,12 +1,10 @@
 // vue.config.js
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
 module.exports = {
-  chainWebpack: config => {
-    // CSV Loader
-    config.module
-      .rule('csv')
-      .test(/\.(c|d|t)sv$/)
-      .use('raw-loader')
-      .loader('raw-loader')
-      .end()
-  }
+  configureWebpack: {
+    optimization: {
+      minimizer: [new UglifyJsPlugin()],
+    }
+  },
 }
