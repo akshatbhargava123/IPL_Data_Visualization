@@ -97,9 +97,10 @@ export default {
     };
   },
   async mounted() {
-    this.id = this.$route.params.id;
-    this.season = this.$route.params.season;
+    this.id = this.$route.params.id || await localforage.getItem('seasonId');
+    this.season = this.$route.params.season || await localforage.getItem('season');
 
+    // I know element can be accessed via this.$refs if defined a ref prop.
     document.getElementById("focusedElem").scrollIntoView();
 
     const worker = store.getItem('worker');
@@ -201,12 +202,19 @@ export default {
     this.loading = false;
   },
   methods: {
-    navigateToMatchOverview({ match }) {
+    async navigateToMatchOverview({ match }) {
+      const matchNum = this.season.matches.findIndex(m => m.Match_Id == match.Match_Id) || 0 + 1;
+
+      await localforage.setItem('match', match);
+      await localforage.setItem('matchDetails', this.matchesDetail[match.Match_Id]);
+      await localforage.setItem('matchNum', matchNum);
+
       this.$router.push({
         name: "match-overview",
         params: {
           match,
-          matchDetails: this.matchesDetail[match.Match_Id]
+          matchDetails: this.matchesDetail[match.Match_Id],
+          matchNum
         }
       });
     }

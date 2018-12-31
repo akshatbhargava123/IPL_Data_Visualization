@@ -66,17 +66,6 @@
 export default {
   name: "MatchesDetailTable",
   props: ["matches", "matchesDetail"],
-  data() {
-    return { tableData: [] };
-  },
-  created() {
-    if (this.matches) {
-      this.tableData = this.matches.sort(
-        (m1, m2) => new Date(m1.Match_Date) > new Date(m2.Match_Date)
-      );
-    }
-    // console.log(this.matches)
-  },
   methods: {
     onMatchSelect(match) {
       this.$emit("matchSelect", { match });

@@ -1,9 +1,11 @@
 <template>
-  <el-card shadow="always">
+  <el-card shadow="always" id="focusedElement">
+    <h1>Match {{ match.Match_Id }}</h1>
+    <p>This was {{ matchNum | NumberSuffix }} match of this season.</p>
+    <p>{{ match.Match_Date | PlainDate }}</p>
+    <p>Net Run Rate: ±{{ matchDetails.Net_Run_Rate }}</p>
     <Loading v-if="loading" />
     <div v-else>
-      <h1>Match {{ match.Match_Id }}</h1>
-      <p>{{ match.Match_Date | PlainDate }}</p>
       <div class="same-line">
         <h3 :class="match.Team_Name_Id == match.Match_Winner_Id  ? 'winner' : 'loser'">Team_Name_{{ match.Match_Winner_Id == match.Opponent_Team_Id ? match.Opponent_Team_Id : match.Team_Name_Id }}</h3>
         <span>
@@ -78,10 +80,7 @@
           :showlines="true"
         ></line-chart>
       </div>
-      
-        <!-- VS
-      <h3>Team_Name_{{ match.Match_Winner_Id == match.Opponent_Team_Id ? match.Team_Name_Id : match.Opponent_Team_Id }}</h3> -->
-      <!-- <p>Total Matches: <b>{{ season.matches ? season.matches.length : '' }}</b></p> -->
+
     </div>
   </el-card>
 </template>
@@ -109,8 +108,9 @@ export default {
     return {
       match: {},
       matchDetails: {},
-      innOfWinner: 1,
-      innOfLoser: 2,
+      matchNum: null,
+      innOfWinner: null,
+      innOfLoser: null,
       RPOChart: {
         options: {},
         legend: {
@@ -155,31 +155,23 @@ export default {
     };
   },
   async mounted() {
-    this.match =
-      this.$route.params.match || (await localforage.getItem("match"));
-    this.matchDetails =
-      this.$route.params.matchDetails ||
-      (await localforage.getItem("matchDetails"));
+    this.match = this.$route.params.match || await localforage.getItem('match');
+    this.matchDetails = this.$route.params.matchDetails || await localforage.getItem('matchDetails');
+    this.matchNum = this.$route.params.matchNum || await localforage.getItem('matchNum');
+
+    document.getElementById('focusedElement').scrollIntoView();
 
     this.match.Match_Loser_Id =
       this.match.Match_Winner_Id == this.match.Team_Name_Id
         ? this.match.Opponent_Team_Id
         : this.match.Team_Name_Id;
 
-    console.log("match", this.match);
-    console.log("matchDetail", this.matchDetails);
-
-    // document.getElementById('focusedElem').scrollIntoView();
-
-    let totalRunsYet_1 = 0,
-      totalRunsYet_2 = 0;
-    const runRatePerOver_1 = [],
-      runRatePerOver_2 = [];
-    const RPO_1 = [],
-      RPO_2 = [];
-    const overs = [];
-    for (let i = 0; i < 20; i++) {
-      for (let j = "1"; j <= "2"; j++) {
+    let totalRunsYet_1 = 0, totalRunsYet_2 = 0;
+    const runRatePerOver_1 = [], runRatePerOver_2 = [];
+    const RPO_1 = [], RPO_2 = [];
+    const overs = { "1": [], "2": [] };
+    for (let j = "1"; j <= "2"; j++) {
+      for (let i = 0; i < this.matchDetails[j].overs.length; i++) {
         const over = this.matchDetails[j].overs[i];
         if (this.matchDetails[j].teamId == this.match.Match_Winner_Id) {
           totalRunsYet_1 += over.runs;
@@ -190,12 +182,12 @@ export default {
           runRatePerOver_2.push((totalRunsYet_2 / (i + 1)).toFixed(2));
           RPO_2.push(over.runs);
         }
+        overs[j].push(`Over_${i + 1}`);
       }
-      overs.push(`Over_${i + 1}`);
     }
 
     this.RPOChart.data = {
-      labels: overs,
+      labels: overs["1"].length > overs["2"].length ? overs["1"] : overs["2"],
       datasets: [
         {
           data: RPO_1,
@@ -215,7 +207,7 @@ export default {
     };
 
     this.RunsPerOverChart.data = {
-      labels: overs,
+      labels: overs["1"].length > overs["2"].length ? overs["1"] : overs["2"],
       datasets: [
         {
           data: runRatePerOver_1,
@@ -280,18 +272,6 @@ export default {
       };
     });
 
-    // this.TeamStatChart[1].data = {
-    //   labels: statHeaders,
-    //   datasets: [
-    //     {
-    //       backgroundColor: getColor(4).lightColor,
-    //       borderColor: getColor(4).color,
-    //       pointBackgroundColor: getColor(1).color,
-    //       data: [10, 11, 9, 13, 5, 2, 1, 7].reverse()
-    //     }
-    //   ]
-    // };
-
     this.loading = false;
   }
 };
@@ -307,5 +287,8 @@ export default {
 .same-line span {
   float: none;
   margin-left: 8px;
+}
+#focusedElement {
+  min-height: 1200px;
 }
 </style>

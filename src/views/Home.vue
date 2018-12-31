@@ -43,7 +43,9 @@ export default {
     });
   },
   methods: {
-    seasonSelected(seasonKey) {
+    async seasonSelected(seasonKey) {
+      await localforage.setItem('seasonId', seasonKey);
+      await localforage.setItem('season', this.dataBySeasons[seasonKey]);
       this.$router.push({
         name: "season-overview",
         params: { season: this.dataBySeasons[seasonKey], id: seasonKey }
