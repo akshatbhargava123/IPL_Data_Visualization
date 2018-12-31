@@ -75,12 +75,12 @@
       <p>Run Rate per over of both teams:</p>
 
       <div class="chart">
-        <line-chart
+        <chart
           type="line"
           :dataProp="RunsPerOverChart.data"
           :options="RunsPerOverChart.options"
           :showlines="true"
-        ></line-chart>
+        ></chart>
       </div>
 
     </div>
@@ -91,7 +91,7 @@
 import localforage from "localforage";
 
 import BarChart from "@/components/BarChart";
-import LineChart from "@/components/LineChart";
+import Chart from "@/components/Chart";
 import TeamBasicStats from "@/components/TeamBasicStats";
 import Loading from "@/components/Loading";
 
@@ -103,7 +103,7 @@ export default {
   components: {
     Loading,
     BarChart,
-    LineChart,
+    Chart,
     TeamBasicStats
   },
   data() {

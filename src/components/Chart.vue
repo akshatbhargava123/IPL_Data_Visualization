@@ -6,6 +6,7 @@
 import Chart from "chart.js";
 
 export default {
+  name: 'Chart',
   props: ["type", "dataProp", "options", "xStepSize", "yStepSize", "showlines"],
   data() {
     return {

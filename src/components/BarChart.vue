@@ -7,6 +7,7 @@
 import Chart from "chart.js";
 
 export default {
+  name: 'BarChart',
   props: ["type", "dataProp", "options", "xStepSize", "yStepSize"],
   data() {
     return {
