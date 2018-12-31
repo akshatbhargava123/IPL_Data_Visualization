@@ -37,14 +37,14 @@ export default {
     Ball_by_Ball = await localforage.getItem('Ball_by_Ball_Data')
 
     if (!Match) {
-      await fetch('https://firebasestorage.googleapis.com/v0/b/test-1522465624044.appspot.com/o/Match.csv?alt=media&token=200ae91e-9634-4b8c-8277-a581a699e15b')
+      await fetch('https://firebasestorage.googleapis.com/v0/b/test-1522465624044.appspot.com/o/Match.csv?alt=media&token=200ae91e-9634-4b8c-8277-a581a699e15b', { mode: 'no-cors' })
         .then(res => res.text())
         .then(res => Match = res)
         .catch(err => alert('Some error occured, please reload the page.'));
     }
     
     if (!Ball_by_Ball) {
-      await fetch('https://firebasestorage.googleapis.com/v0/b/test-1522465624044.appspot.com/o/Ball_by_Ball.csv?alt=media&token=cc1bff3d-e7d5-40a9-b209-48de62180b0e')
+      await fetch('https://firebasestorage.googleapis.com/v0/b/test-1522465624044.appspot.com/o/Ball_by_Ball.csv?alt=media&token=cc1bff3d-e7d5-40a9-b209-48de62180b0e', { mode: 'no-cors' })
         .then(res => res.text())
         .then(res => Ball_by_Ball = res)
         .catch(err => alert('Some error occured, please reload the page.'));

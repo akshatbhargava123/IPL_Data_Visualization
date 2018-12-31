@@ -7,6 +7,8 @@ The dashboard currently has following features:
 3. VenueOverview (provides specific info regarding a venue in selected season like average runs in innings, matches, highest scored match, etc.)
 4. MatchOverview (provides information regarding a match from basic to advanced like match winner, type of extra runs received and conceded by either team, etc.)
 
+Click [here](https://ipl-data-visualization.firebaseapp.com) to checkout the hosted app.
+
 ## Technology Stack
 1. VueJS (core frontend framework). Reasons to choose:
   * Out of the box lot of functionality (routing, data-binding and what not.)
