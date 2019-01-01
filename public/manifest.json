@@ -44,7 +44,7 @@
     }
   ],
   "theme_color": "#778590",
-  "background_color": "#2196f3",
+  "background_color": "#778590",
   "display": "standalone",
   "orientation": "portrait",
   "scope": "/",
