@@ -41,7 +41,7 @@ _Pardon me for slow loading of assets (CSV files), it's not really under my cont
 * You create the webapp in VueJS ✅ (tried to make code as modular as possible using component based architecture using VueJS)
 * You can optimize the loading time ✅ (optimized loading time by caching the stuff in IndexedDB using localforage so we don't make fetch requests every time to get CSVs)
 * You make it mobile responsive  ❌
-* You make it a PWA ✅ (done, vue-pwa plugin of vue-cli automatically enabled PWA capabilities by injecting a workbox powered SW)
+* You make it a PWA ✅ (done, vue-pwa plugin of vue-cli automatically enabled PWA capabilities by injecting a workbox powered SW. I updated manifest.json file and added relevant app icons to let chrome show add to homescreen popup)
 * You make it offline usable ✅ (after first load, the application is served offline via service worker, thanks to vue-pwa plugin)
 
 ## Light House Results 😎
