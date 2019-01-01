@@ -13,6 +13,8 @@ The dashboard currently has following features:
 
 Click [here](https://ipl-data-visualization.firebaseapp.com) to checkout the hosted app.
 
+_Pardon me for slow loading of assets (CSV files), it's not really under my control. Heroku free dyno servers sleep. Read more about it [here](https://devcenter.heroku.com/articles/dynos#dyno-sleeping)._
+
 ## Technology Stack
 1. VueJS (core frontend framework). Reasons to choose:
   * Out of the box lot of functionality (routing, data-binding and what not.)
