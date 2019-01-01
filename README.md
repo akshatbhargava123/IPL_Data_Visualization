@@ -44,6 +44,9 @@ _Pardon me for slow loading of assets (CSV files), it's not really under my cont
 * You make it a PWA ✅ (done, vue-pwa plugin of vue-cli automatically enabled PWA capabilities by injecting a workbox powered SW)
 * You make it offline usable ✅ (after first load, the application is served offline via service worker, thanks to vue-pwa plugin)
 
+## Light House Results 😎
+![alt image1](https://res.cloudinary.com/dw7iunxs5/image/upload/v1546353927/Screenshot_2019-01-01_at_8.14.23_PM.png)
+
 ## What I think can be added using the datasets provided but didn't implement?
 1. Player Partnerships' table in sorted order
 2. Batting and Bowling stats of team (in particular season, match, venue)
