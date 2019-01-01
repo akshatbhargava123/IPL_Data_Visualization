@@ -7,6 +7,10 @@ The dashboard currently has following features:
 3. VenueOverview (provides specific info regarding a venue in selected season like average runs in innings, matches, highest scored match, etc.)
 4. MatchOverview (provides information regarding a match from basic to advanced like match winner, type of extra runs received and conceded by either team, etc.)
 
+ Minor notes:
+ 1. I've represented name of teams as Team_Name_{their id} just to give better visual appearance of them in the whole project.
+ 2. Data of some matches is not complete in Ball_by_Ball.csv so some parameters like NRR couldn't be calculated. For example: for match id - 501230, 501250 and a few more inning two neither has all players out nor does the match gets over.
+
 Click [here](https://ipl-data-visualization.firebaseapp.com) to checkout the hosted app.
 
 ## Technology Stack
@@ -25,8 +29,11 @@ Click [here](https://ipl-data-visualization.firebaseapp.com) to checkout the hos
   * Handled all my complex get/set works in IndexedDB
   * Naturally drops to another db (WebSQL, localstorage) if IndexedDB not available
 
-5. Firebase for hosting (core app and CSVs)
+5. Firebase for hosting (core app)
   * Easiest and fastest hosting solution in my opinion.
+
+6. Heroku for hosting (backend file provider)
+  * Made a express app which serves our CSVs deployed on heroku. Finally, CORS...!
 
 ## Bonus Points T&C (given vs fullfilled)
 * You create the webapp in VueJS ✅ (tried to make code as modular as possible using component based architecture using VueJS)

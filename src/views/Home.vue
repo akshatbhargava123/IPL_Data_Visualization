@@ -1,6 +1,9 @@
 <template>
-  <Loading v-if="dataLoading" />
-  <SeasonSelect v-else :dataBySeasons="dataBySeasons" @seasonClick="seasonSelected" />
+  <div>
+    <p v-if="fetchingData">Fetching Data from server...</p>
+    <Loading v-else-if="dataLoading" />
+    <SeasonSelect v-else :dataBySeasons="dataBySeasons" @seasonClick="seasonSelected" />
+  </div>
 </template>
 
 <script>
@@ -10,8 +13,6 @@ import SeasonSelect from "@/components/SeasonSelect.vue";
 import Loading from "@/components/Loading.vue";
 
 import store from "../sharedservice";
-
-let Match, Ball_by_Ball;
 
 export default {
   name: "home",
@@ -24,7 +25,10 @@ export default {
       matchesData: null,
       worker: null,
       dataBySeasons: null,
-      dataLoading: true
+      dataLoading: true,
+      Match: null,
+      Ball_by_Ball: null,
+      fetchingData: true
     };
   },
   async created() {
@@ -33,32 +37,38 @@ export default {
 
     // Eagerly loading CSV files for better experience later
 
-    Match = await localforage.getItem('Match_Data')
-    Ball_by_Ball = await localforage.getItem('Ball_by_Ball_Data')
+    this.Match = await localforage.getItem('Match_Data')
+    this.Ball_by_Ball = await localforage.getItem('Ball_by_Ball_Data')
 
-    if (!Match) {
-      await fetch('https://firebasestorage.googleapis.com/v0/b/test-1522465624044.appspot.com/o/Match.csv?alt=media&token=200ae91e-9634-4b8c-8277-a581a699e15b', { mode: 'no-cors' })
+    if (!this.Match) {
+      await fetch('https://file-provider.herokuapp.com/Match.csv')
         .then(res => res.text())
-        .then(res => Match = res)
-        .catch(err => alert('Some error occured, please reload the page.'));
+        .then(res => {
+          console.log('Match.csv received from server!')
+          this.Match = res;
+        });
     }
     
-    if (!Ball_by_Ball) {
-      await fetch('https://firebasestorage.googleapis.com/v0/b/test-1522465624044.appspot.com/o/Ball_by_Ball.csv?alt=media&token=cc1bff3d-e7d5-40a9-b209-48de62180b0e', { mode: 'no-cors' })
+    if (!this.Ball_by_Ball) {
+      await fetch('https://file-provider.herokuapp.com/Ball_by_Ball.csv')
         .then(res => res.text())
-        .then(res => Ball_by_Ball = res)
-        .catch(err => alert('Some error occured, please reload the page.'));
+        .then(res => {
+          console.log('Ball_by_Ball.csv received from server!')
+          this.Ball_by_Ball = res;
+        });
     }
 
-    localforage.setItem('Match_Data', Match)
-    localforage.setItem('Ball_by_Ball_Data', Ball_by_Ball)
+    this.fetchingData = false;
+
+    localforage.setItem('Match_Data', this.Match)
+    localforage.setItem('Ball_by_Ball_Data', this.Ball_by_Ball)
 
     const Matches_JSON = await localforage.getItem("Matches_JSON");
     if (Matches_JSON) {
       Promise.resolve(Matches_JSON).then(this.MatchJSONReady);
     } else {
       this.worker
-        .postMessage("convertToJSON", [Match])
+        .postMessage("convertToJSON", [this.Match])
         .then(this.MatchJSONReady);
     }
   },
@@ -100,7 +110,7 @@ export default {
           Promise.resolve(BallbyBallJSON).then(this.BallByBallJSONReady);
         } else {
           this.worker
-            .postMessage("convertToJSON", [Ball_by_Ball])
+            .postMessage("convertToJSON", [this.Ball_by_Ball])
             .then(this.BallByBallJSONReady);
         }
       });
